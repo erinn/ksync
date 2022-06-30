@@ -38,7 +38,7 @@ class ksync:
 		if fleet == '000' and device == '0000' and broadcast == False:
 			raise Exception(f'Fleet number {fleet} and device number {device} can not be set to 000 '
 												'and 0000 respectively unless broadcast is desired, please set a fleet '
-												'number and device number or set broadcast to true.')
+												'number and device number or enable broadcast.')
 
 		return(text_to_send)
 
