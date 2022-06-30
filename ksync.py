@@ -5,22 +5,50 @@ class ksync:
 	def __init__(self) -> None:
 		self.serial_port: str = None
 
-	def _length_code(self, message: str) -> str:
+	@staticmethod
+	def _length_code(message: str) -> str:
 		'''
 		Returns hex codes to indicate the length of the message to be sent to the serial port.
 
-		If the message length is greater than 4096 characters an excpetion is thrown.
+		If the message length is greater than 4096 characters an exception is thrown.
+
+		<length_code> - indicates max possible message length, though the plain text message is not padded to that length
+	  46 hex (ascii F) - corresponds to 'S' (Short - 48 characters)
+	  47 hex (ascii G) - corresponds to both 'L' (Long - 1024 characters) and 'X' (Extra-long - 4096 characters)
+	  if you send COM port data with message body longer than that limit, the mobile will not transmit
 		'''
+
 		if len(message) <= 48:
 			return '\x46'
+
 		elif len(message) <= 4096:
 			return '\x47'
+
 		else:
 			raise Exception(f'Length of message is {len(message)}, > 4096 characters and cannot be transmitted.')
 
-	def send_text(self, message: str, fleet: str, device: str, broadcast: bool = False):
-		pass
+	def send_text(self, message: str, fleet: str = '000', device: str = '0000', broadcast: bool = False):
+		'''
+		Send a text message to a given radio, or broadcast a text message to all radios.
+		'''
+		sequence = 0
 
+		text_to_send = '\x02' + self._length_code(message) + fleet + device + message + str(sequence) +'\x03'
+
+		if fleet == '000' and device == '0000' and broadcast == False:
+			raise Exception(f'Fleet number {fleet} and device number {device} can not be set to 000 '
+												'and 0000 respectively unless broadcast is desired, please set a fleet '
+												'number and device number or set broadcast to true.')
+
+		return(text_to_send)
+
+
+
+	def poll_GNSS(self):
+		'''
+		Request a radio to return it's current position using the Global Navigation Satellite Systems (commonly referred to as GPS).
+		'''
+		pass
 
 # sendText and pollGPS:
 	# self.firstComPort and secondComPort are not defined until valid FS data has been read from that port.

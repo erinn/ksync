@@ -11,8 +11,7 @@ def test_length_code_47():
 
   string_47 = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 47))
 
-  k = ksync()
-  assert k._length_code(message = string_47) == '\x46'
+  assert ksync._length_code(message = string_47) == '\x46'
 
 def test_length_code_49():
   '''
@@ -21,17 +20,35 @@ def test_length_code_49():
 
   string_49 = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 49))
 
-  k = ksync()
-  assert k._length_code(message = string_49) == '\x47'
+  assert ksync._length_code(message = string_49) == '\x47'
 
 def test_length_code_4097():
   '''
   Test that an exception is thrown when the length of the message is 4097 characters.
   '''
-  
+
   string_4097 = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 4097))
 
+  with pytest.raises(Exception):
+    assert ksync._length_code(string_4097)
+
+def test_send_text_broadcast():
+  message = 'foo'
+  k = ksync()
+
+  assert k.send_text(message, broadcast=True) == '\x02\x460000000foo0\x03'
+
+def test_send_text_single_device():
+  message = 'foo'
+  fleet = '123'
+  device = '1234'
+
+  k = ksync()
+  assert k.send_text(message=message, fleet=fleet, device=device) == '\x02\x461231234foo0\x03'
+
+def test_send_text_broadcast_false_exception():
+  message = 'foo'
   k = ksync()
 
   with pytest.raises(Exception):
-    assert k._length_code(string_4097)
+    assert k.send_text(message)
