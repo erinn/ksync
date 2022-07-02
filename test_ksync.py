@@ -16,6 +16,7 @@ def k():
   '''
   Although initializing ksync is not currently a heavy operation, there is no reason to keep doing it.
   '''
+
   return ksync()
 
 def test_length_code_short_message():
