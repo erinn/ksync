@@ -10,18 +10,17 @@ class KSync:
 
     def __init__(self, serial_port: object) -> None:
         """
-        :param object serial_port: A serial port object, object must have a
+        :param serial_port: A serial port object, object must have a
         write() and flush() method.
         """
-        self.serial_port: object = serial_port
-        self.sequence: int = 0
+        self.serial_port = serial_port
+        self.sequence = 0
 
     @staticmethod
     def _length_code(message: str) -> str:
         """
-        :param str message: The message to be transmitted.
-
-        Returns hex codes to indicate the length of the message to be sent to the serial port.
+        :param message: The message to be transmitted.
+        :return: Hex codes to indicate the length of the message to be sent to the serial port.
 
         If the message length is greater than 4096 characters an exception is thrown.
 
@@ -44,12 +43,11 @@ class KSync:
 
     def send_text(self, message: str, fleet: str = '000', device: str = '0000', broadcast: bool = False) -> int:
         """
-        :param str message: The text of the message to be sent.
-        :param str fleet: The fleet code to be used as a string.
+        :param message: The text of the message to be sent.
+        :param fleet: The fleet code to be used as a string.
         :param device: The device code to be used as a string.
-        :param bool broadcast: Is the message intended to be a broadcast.
+        :param broadcast: Is the message intended to be a broadcast.
         :return: The number of characters transmitted.
-        :rtype: int
 
         Send a  message to a given radio, or broadcast a  message to all radios.
         """

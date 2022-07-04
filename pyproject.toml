@@ -1,0 +1,48 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ksync"
+version = "0.1.0"
+description = "Library to work with Kenwood FleetSync"
+readme = "README.md"
+authors = [{ name = "Erinn Looney-Triggs", email = "erinn.looneytriggs@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["FleetSync"]
+dependencies = []
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "bumpver", "pep8", "pip-tools", "pylint", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/erinn/ksync"
+
+[tool.bumpver]
+current_version = "0.1.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+]
+"src/ksync/__init__.py" = [
+    '^__version__ = "{version}"$'
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
