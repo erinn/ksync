@@ -17,7 +17,7 @@ class KSync:
         self.sequence = 0
 
     @staticmethod
-    def _length_code(message: str) -> str:
+    def _length_code(message: str) -> bytes:
         """
         :param message: The message to be transmitted.
         :return: Hex codes to indicate the length of the message to be sent to the serial port.
@@ -57,7 +57,8 @@ class KSync:
                             'and 0000 respectively unless broadcast is desired, please set a fleet '
                             'number and device number or enable broadcast.')
 
-        text = '\x02' + self._length_code(message) + fleet + device + message + str(self.sequence) + '\x03'
+        text = f'\x02{self._length_code(message)}{fleet}{device}{message}' + \
+               f'{str(self.sequence)}\x03'
 
         return_length = self.serial_port.write(text.encode())
         self.sequence += 1

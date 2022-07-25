@@ -21,7 +21,7 @@ dependencies = []
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = ["black", "bumpver", "pep8", "pip-tools", "pylint", "pytest"]
+dev = ["black", "bumpver", "pep8", "pip-tools", "pylint", "pytest", "pytest-mock"]
 
 [project.urls]
 Homepage = "https://github.com/erinn/ksync"
