@@ -95,6 +95,7 @@ def test_send_text_broadcast_false_exception(k):
     with pytest.raises(Exception):
         assert k.send_text(short_message)
 
+
 def test_poll_gnss(k):
     expected = len(b"\x02\x52\x33" + fleet_id.encode() + device_id.encode() + b"\x03")
 
