@@ -1,6 +1,7 @@
 import logging
 
-logger = logging.getLogger('KSync')
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler)
 
 
 class KSync:
@@ -32,6 +33,9 @@ class KSync:
 
         length_of_message = len(message)
 
+        logger.info("Calculating length code for message.")
+        logger.info("Length of message is %d", length_of_message)
+
         if length_of_message <= 48:
             return '\x46'
 
@@ -51,6 +55,9 @@ class KSync:
 
         Send a  message to a given radio, or broadcast a  message to all radios.
         """
+
+        logger.info("Fleet ID is: %s and Device ID is: %s", fleet, device)
+        logger.info("Broadcast? %s", broadcast)
 
         if fleet == '000' and device == '0000' and broadcast is False:
             raise Exception(f'Fleet number {fleet} and device number {device} can not be set to 000 '
@@ -77,11 +84,15 @@ class KSync:
         Request a radio to return the current position using the
         Global Navigation Satellite Systems (commonly referred to as GPS).
         """
+        logger.info("Polling Device ID: %s in Fleet ID: %s for location", device, fleet)
+
         message = f'\x02\x52\x33{fleet}{device}\x03'
 
         return_length = self.serial_port.write(message.encode())
         self.sequence += 1
 
         self.serial_port.flush()
+
+        logger.info("Polling command flushed to serial port.")
 
         return return_length
