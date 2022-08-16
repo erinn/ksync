@@ -1,0 +1,44 @@
+name: Release ksync
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build-release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Flit and Twine
+        run: |
+          pip install --upgrade flit twine
+
+      - name: Build Distributions
+        run: |
+          flit build
+
+      - name: Run Twine Checks
+        run: |
+          twine check dist/*
+
+      - name: Publish to Pypi
+        run: twine upload dist/*
+        shell: bash
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+
+
+

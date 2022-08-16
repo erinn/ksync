@@ -68,7 +68,7 @@ def test_send_short_text_broadcast(k):
     Test a basic broadcast message is formatted correctly.
     """
     # Arrange
-    expected = len(b"\x02\x460000000" + short_message.encode() + b"0\x03")
+    expected = len(b"\x02\x460000000" + short_message.encode() + b"\x03")
 
     # Act
     output = k.send_text(short_message, broadcast=True)
@@ -83,7 +83,7 @@ def test_send_short_text_single_device(k):
         + fleet_id.encode()
         + device_id.encode()
         + short_message.encode()
-        + b"0\x03"
+        + b"\x03"
     )
 
     output = k.send_text(message=short_message, fleet=fleet_id, device=device_id)

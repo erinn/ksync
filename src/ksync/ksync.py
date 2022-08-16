@@ -15,20 +15,21 @@ class KSync:
         write() and flush() method.
         """
         self.serial_port = serial_port
+        # Though the sequence number is unused it is held for completeness with
+        # the understood protocol.
         self.sequence = 0
 
     @staticmethod
-    def _length_code(message: str) -> bytes:
+    def _length_code(message: str) -> str:
         """
         :param message: The message to be transmitted.
-        :return: Hex codes to indicate the length of the message to be sent to the serial port.
+        :return: String that indicates the length of the message to be sent to the serial port.
 
         If the message length is greater than 4096 characters an exception is thrown.
 
         <length_code> - indicates max possible message length, though the plain text message is not padded to that length
         46 hex (ascii F) - corresponds to 'S' (Short - 48 characters)
         47 hex (ascii G) - corresponds to both 'L' (Long - 1024 characters) and 'X' (Extra-long - 4096 characters)
-        if you send COM port data with message body longer than that limit, the mobile will not transmit
         """
 
         length_of_message = len(message)
@@ -56,9 +57,9 @@ class KSync:
     ) -> int:
         """
         :param message: The text of the message to be sent.
-        :param fleet: The fleet code to be used as a string.
-        :param device: The device code to be used as a string.
-        :param broadcast: Is the message intended to be a broadcast.
+        :param fleet: The fleet ID to be used, as a string.
+        :param device: The device ID to be used, as a string.
+        :param broadcast: Is the message intended to be a broadcast?
         :return: The number of characters transmitted.
 
         Send a  message to a given radio, or broadcast a  message to all radios.
@@ -74,10 +75,7 @@ class KSync:
                 "number and device number or enable broadcast."
             )
 
-        text = (
-            f"\x02{self._length_code(message)}{fleet}{device}{message}"
-            + f"{str(self.sequence)}\x03"
-        )
+        text = f"\x02{self._length_code(message)}{fleet}{device}{message}\x03"
 
         return_length = self.serial_port.write(text.encode())
         self.sequence += 1
@@ -89,14 +87,16 @@ class KSync:
 
     def poll_gnss(self, fleet: str, device: str) -> int:
         """
-        :param fleet: The fleet number as a string.
-        :param device: The device number as a string.
+        :param fleet: The fleet ID, as a string.
+        :param device: The device ID, as a string.
         :return: The number of characters transmitted.
 
         Request a radio to return the current position using the
         Global Navigation Satellite Systems (commonly referred to as GPS).
         """
-        logger.info("Polling Device ID: %s in Fleet ID: %s for location", device, fleet)
+        logger.info(
+            "Polling Device ID: %s in Fleet ID: %s for location.", device, fleet
+        )
 
         message = f"\x02\x52\x33{fleet}{device}\x03"
 
