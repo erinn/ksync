@@ -1,6 +1,6 @@
-name: Release KConsole
+name: Test ksync
 on:
-  pull-request:
+  pull_request:
     types: [opened, reopened]
 
 jobs:

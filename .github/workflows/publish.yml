@@ -5,7 +5,7 @@ on:
       - '*.*.*'
 
 jobs:
-  build-release:
+  build-publish-release:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -35,9 +35,9 @@ jobs:
       - name: Publish to Pypi
         run: twine upload dist/*
         shell: bash
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
 
 
