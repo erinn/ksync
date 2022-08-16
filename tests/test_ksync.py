@@ -4,7 +4,7 @@ import random
 import string
 import pytest
 
-from src.ksync.ksync import KSync
+from ksync.ksync import KSync
 
 # A number of constants to be used throughout the tests
 device_id = "1234"

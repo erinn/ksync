@@ -37,15 +37,23 @@ class KSync:
         logger.info("Length of message is %d", length_of_message)
 
         if length_of_message <= 48:
-            return '\x46'
+            return "\x46"
 
         elif length_of_message <= 4096:
-            return '\x47'
+            return "\x47"
 
         else:
-            raise Exception(f'Length of message is {length_of_message}, > 4096 characters and cannot be transmitted.')
+            raise Exception(
+                f"Length of message is {length_of_message}, > 4096 characters and cannot be transmitted."
+            )
 
-    def send_text(self, message: str, fleet: str = '000', device: str = '0000', broadcast: bool = False) -> int:
+    def send_text(
+        self,
+        message: str,
+        fleet: str = "000",
+        device: str = "0000",
+        broadcast: bool = False,
+    ) -> int:
         """
         :param message: The text of the message to be sent.
         :param fleet: The fleet code to be used as a string.
@@ -59,13 +67,17 @@ class KSync:
         logger.info("Fleet ID is: %s and Device ID is: %s", fleet, device)
         logger.info("Broadcast? %s", broadcast)
 
-        if fleet == '000' and device == '0000' and broadcast is False:
-            raise Exception(f'Fleet number {fleet} and device number {device} can not be set to 000 '
-                            'and 0000 respectively unless broadcast is desired, please set a fleet '
-                            'number and device number or enable broadcast.')
+        if fleet == "000" and device == "0000" and broadcast is False:
+            raise Exception(
+                f"Fleet number {fleet} and device number {device} can not be set to 000 "
+                "and 0000 respectively unless broadcast is desired, please set a fleet "
+                "number and device number or enable broadcast."
+            )
 
-        text = f'\x02{self._length_code(message)}{fleet}{device}{message}' + \
-               f'{str(self.sequence)}\x03'
+        text = (
+            f"\x02{self._length_code(message)}{fleet}{device}{message}"
+            + f"{str(self.sequence)}\x03"
+        )
 
         return_length = self.serial_port.write(text.encode())
         self.sequence += 1
@@ -86,7 +98,7 @@ class KSync:
         """
         logger.info("Polling Device ID: %s in Fleet ID: %s for location", device, fleet)
 
-        message = f'\x02\x52\x33{fleet}{device}\x03'
+        message = f"\x02\x52\x33{fleet}{device}\x03"
 
         return_length = self.serial_port.write(message.encode())
         self.sequence += 1
