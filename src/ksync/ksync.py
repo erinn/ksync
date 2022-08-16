@@ -51,31 +51,29 @@ class KSync:
     def send_text(
         self,
         message: str,
-        fleet: str = "000",
-        device: str = "0000",
+        fleet_id: int = None,
+        device_id: int = None,
         broadcast: bool = False,
     ) -> int:
         """
         :param message: The text of the message to be sent.
-        :param fleet: The fleet ID to be used, as a string.
-        :param device: The device ID to be used, as a string.
+        :param fleet_id: The Fleet ID to be used.
+        :param device_id: The Device ID to be usedg.
         :param broadcast: Is the message intended to be a broadcast?
         :return: The number of characters transmitted.
 
         Send a  message to a given radio, or broadcast a  message to all radios.
         """
 
-        logger.info("Fleet ID is: %s and Device ID is: %s", fleet, device)
+        logger.info("Fleet ID is: %s and Device ID is: %s", fleet_id, device_id)
         logger.info("Broadcast? %s", broadcast)
 
-        if fleet == "000" and device == "0000" and broadcast is False:
-            raise Exception(
-                f"Fleet number {fleet} and device number {device} can not be set to 000 "
-                "and 0000 respectively unless broadcast is desired, please set a fleet "
-                "number and device number or enable broadcast."
-            )
+        if broadcast:
+            # Int makes more sense to take in, but a broadcast requires a string.
+            fleet_id = "000"
+            device_id = "0000"
 
-        text = f"\x02{self._length_code(message)}{fleet}{device}{message}\x03"
+        text = f"\x02{self._length_code(message)}{fleet_id}{device_id}{message}\x03"
 
         return_length = self.serial_port.write(text.encode())
         self.sequence += 1
@@ -85,20 +83,20 @@ class KSync:
 
         return return_length
 
-    def poll_gnss(self, fleet: str, device: str) -> int:
+    def poll_gnss(self, fleet_id: int, device_id: int) -> int:
         """
-        :param fleet: The fleet ID, as a string.
-        :param device: The device ID, as a string.
+        :param fleet_id: The Fleet ID.
+        :param device_id: The Device IDg.
         :return: The number of characters transmitted.
 
         Request a radio to return the current position using the
         Global Navigation Satellite Systems (commonly referred to as GPS).
         """
         logger.info(
-            "Polling Device ID: %s in Fleet ID: %s for location.", device, fleet
+            "Polling Device ID: %s in Fleet ID: %s for location.", device_id, fleet_id
         )
 
-        message = f"\x02\x52\x33{fleet}{device}\x03"
+        message = f"\x02\x52\x33{fleet_id}{device_id}\x03"
 
         return_length = self.serial_port.write(message.encode())
         self.sequence += 1
