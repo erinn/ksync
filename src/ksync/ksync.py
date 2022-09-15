@@ -18,8 +18,9 @@ class KSync:
 
     def __init__(self, serial_port: object) -> None:
         """
-        :param serial_port: A serial port object, object must have a
-        write() and flush() method.
+        Args:
+            serial_port: A serial port object, object must have a
+            write() and flush() method.
         """
         self.serial_port = serial_port
         # Though the sequence number is unused it is held for completeness with
@@ -29,14 +30,18 @@ class KSync:
     @staticmethod
     def _length_code(message: str) -> str:
         """
-        :param message: The message to be transmitted.
-        :return: String that indicates the length of the message to be sent to the serial port.
+        Calculate the length code to use for a given message.
 
-        If the message length is greater than 4096 characters an exception is thrown.
-
-        <length_code> - indicates max possible message length.
-        46 hex (ascii F) - corresponds to 'S' (Short - 48 characters)
-        47 hex (ascii G) - corresponds to both 'L' (Long - 1024 characters) and 'X' (Extra-long - 4096 characters)
+        Args:
+            message: The message to be transmitted.
+        Returns:
+            A string that indicates the length of message to be sent.
+        Raises:
+            Exception: Length of message is greater than 4096 characters.
+        Notes:
+            46 hex (ascii F) - corresponds to 'S' (Short - 48 characters)
+            47 hex (ascii G) - corresponds to both 'L' (Long - 1024 characters)
+            and 'X' (Extra-long - 4096 characters)
         """
 
         length_of_message = len(message)
@@ -50,10 +55,10 @@ class KSync:
         if length_of_message <= 4096:
             return "\x47"
 
-        else:
-            raise Exception(
-                f"Length of message is {length_of_message}, > 4096 characters and cannot be transmitted."
-            )
+        raise Exception(
+            f"Length of message is {length_of_message}, > 4096 characters and "
+            "cannot be transmitted."
+        )
 
     def send_text(
         self,
@@ -63,13 +68,18 @@ class KSync:
         broadcast: bool = False,
     ) -> int:
         """
-        :param message: The text of the message to be sent.
-        :param fleet_id: The Fleet ID to be used.
-        :param device_id: The Device ID to be usedg.
-        :param broadcast: Is the message intended to be a broadcast?
-        :return: The number of characters transmitted.
+        Send a message to a device or broadcast to all devices.
 
-        Send a  message to a given radio, or broadcast a  message to all radios.
+        Examples:
+            >>> k = KSync(serial_port=port)
+            >>> k.send_text(message="The vogon fleet has landed", fleet_id=100, device_id=1000)
+        Args:
+            message: The text of the message to be sent.
+            fleet_id: The Fleet ID to be used.
+            device_id: The Device ID to be used.
+            broadcast: Is the message intended to be a broadcast?
+        Returns:
+            The number of characters transmitted.
         """
 
         logger.info("Fleet ID is: %s and Device ID is: %s", fleet_id, device_id)
@@ -92,12 +102,14 @@ class KSync:
 
     def poll_gnss(self, fleet_id: int, device_id: int) -> int:
         """
-        :param fleet_id: The Fleet ID.
-        :param device_id: The Device IDg.
-        :return: The number of characters transmitted.
-
         Request a radio to return the current position using the
         Global Navigation Satellite Systems (commonly referred to as GPS).
+
+        Args:
+            fleet_id: The Fleet ID.
+            device_id: The Device ID.
+        Returns:
+            The number of characters transmitted.
         """
         logger.info(
             "Polling Device ID: %s in Fleet ID: %s for location.", device_id, fleet_id

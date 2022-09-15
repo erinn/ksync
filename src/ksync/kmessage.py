@@ -1,3 +1,6 @@
+"""
+Parse and hold messages received from FleetSync devices.
+"""
 import datetime
 import logging
 
@@ -11,7 +14,8 @@ class KMessage:
 
     def __init__(self, raw_message: bytes = None):
         """
-        :param raw_message: The raw message received from the serial port.
+        Args:
+            raw_message: The raw message received from the serial port.
         """
 
         self.ack: bool = False
@@ -32,6 +36,11 @@ class KMessage:
     def _parse(self):
         """
         Parse the raw message and populate what can be populated.
+
+        Raises:
+            Exception: Message does not start with STX control character or
+                       does not end with ETX control character.
+            Exception: Unknown message type.
         """
 
         # ASCII control characters.
@@ -46,7 +55,8 @@ class KMessage:
             self.message = self.raw_message.strip(stx).strip(etx).decode("utf-8")
         else:
             raise Exception(
-                "Message does not start with STX control character or does not end with ETX control character."
+                "Message does not start with STX control character or does not "
+                "end with ETX control character."
             )
 
         # Identification message.
@@ -57,10 +67,10 @@ class KMessage:
             self.fleet_id = int(self.message[1:4])
             return
         # Acknowledgement message.
-        elif self.message[0] == "0":
+        if self.message[0] == "0":
             logger.info("Message is an acknowledgement.")
 
             self.ack = True
             return
-        else:
-            raise Exception("Unknown message type for message: %s.", self.raw_message)
+
+        raise Exception(f"Unknown message type for message: {self.raw_message}")

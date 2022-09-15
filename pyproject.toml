@@ -26,6 +26,11 @@ dev = [
     "pip-tools",
     "pylint"
 ]
+doc = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material"
+]
 test = [
     "pytest",
     "pytest-cov",
