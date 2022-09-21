@@ -10,19 +10,24 @@ logger = logging.getLogger(__name__)
 class KSync:
     """
     Provides methods to work with FleetSync.
+
+    Attributes:
+        serial_port: A serial port object, must have write() and flush() methods.
+
+    Methods:
+        send_text: Send a text message to a device.
     """
 
     # ASCII Start of transmission (stx) and end of transmission (etx).
-    stx = "\x02"
-    etx = "\x03"
+    _etx = "\x03"
+    _stx = "\x02"
 
     def __init__(self, serial_port: object) -> None:
         """
-        Args:
-            serial_port: A serial port object, object must have a
-            write() and flush() method.
+        Initializes the KSync class.
         """
         self.serial_port = serial_port
+
         # Though the sequence number is unused it is held for completeness with
         # the understood protocol.
         self.sequence = 0
@@ -73,11 +78,13 @@ class KSync:
         Examples:
             >>> k = KSync(serial_port=port)
             >>> k.send_text(message="The vogon fleet has landed", fleet_id=100, device_id=1000)
+
         Args:
             message: The text of the message to be sent.
             fleet_id: The Fleet ID to be used.
             device_id: The Device ID to be used.
             broadcast: Is the message intended to be a broadcast?
+
         Returns:
             The number of characters transmitted.
         """
@@ -90,7 +97,7 @@ class KSync:
             fleet_id = "000"
             device_id = "0000"
 
-        text = f"{self.stx}{self._length_code(message)}{fleet_id}{device_id}{message}{self.etx}"
+        text = f"{self._stx}{self._length_code(message)}{fleet_id}{device_id}{message}{self._etx}"
 
         return_length = self.serial_port.write(text.encode())
         self.sequence += 1
@@ -102,12 +109,17 @@ class KSync:
 
     def poll_gnss(self, fleet_id: int, device_id: int) -> int:
         """
-        Request a radio to return the current position using the
+        Request a device to return the current position using the
         Global Navigation Satellite Systems (commonly referred to as GPS).
+
+        Examples:
+            >>> k = KSync(serial_port=port)
+            >>> k.poll_gnss(fleet_id=100, device_id=1333)
 
         Args:
             fleet_id: The Fleet ID.
             device_id: The Device ID.
+
         Returns:
             The number of characters transmitted.
         """
@@ -115,7 +127,7 @@ class KSync:
             "Polling Device ID: %s in Fleet ID: %s for location.", device_id, fleet_id
         )
 
-        message = f"{self.stx}R3{fleet_id}{device_id}{self.etx}"
+        message = f"{self._stx}R3{fleet_id}{device_id}{self._etx}"
 
         return_length = self.serial_port.write(message.encode())
         self.sequence += 1

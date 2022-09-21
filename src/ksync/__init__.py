@@ -2,6 +2,9 @@
 
 import logging
 
+from ksync.kmessage import KMessage
+from ksync.ksync import KSync
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 

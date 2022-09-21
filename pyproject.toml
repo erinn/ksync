@@ -13,7 +13,8 @@ classifiers = [
     "Programming Language :: Python :: 3"
 ]
 dynamic = ["version", "description"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
+dependencies = ["pynmeagps"]
 
 [project.urls]
 Home = "https://github.com/erinn/ksync/"

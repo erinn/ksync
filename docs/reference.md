@@ -1,1 +1,2 @@
-::: ksync.ksync.KSync
+::: ksync.KSync
+::: ksync.KMessage
