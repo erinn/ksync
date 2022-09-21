@@ -8,4 +8,4 @@ from ksync.ksync import KSync
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
