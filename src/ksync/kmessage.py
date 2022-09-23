@@ -85,8 +85,8 @@ class KMessage:
             logger.debug("Message is well formatted data from a device.")
             self.message = self.raw_message.strip(stx).strip(etx).decode("utf-8")
 
-        elif self.raw_message.startswith("$"):
-            logger.debug("Message is an NMEA sentence.")
+        elif self.raw_message.startswith(b"$PK"):
+            logger.debug("Message is a proprietary Kenwood NMEA sentence.")
             self.message = self.raw_message.decode("utf-8")
 
         else:
@@ -111,9 +111,13 @@ class KMessage:
             self.device_id = int(self.message[5:9])
             return
 
-        if self.message.startswith("$"):
-            logger.info("Message is an NMEA sentence, parsing via pynmegps.")
+        if self.message.startswith("$PK"):
+            logger.info(
+                "Message is a proprietary Kenwood NMEA sentence, parsing via pynmeagps."
+            )
             self.nmea_message = NMEAReader.parse(self.message)
+            self.device_id = int(self.nmea_message.deviceId)
+            self.fleet_id = int(self.nmea_message.fleetId)
             return
 
         # Acknowledgement message.
